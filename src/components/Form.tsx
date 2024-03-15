@@ -3,7 +3,7 @@ import { FormEvent, useState } from "react";
 const Form = () => {
   const [inputValue, setInputValue] = useState("");
 
-  const handleSubmit = (event: FormEvent) => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     alert(`submitted: ${inputValue}`);
   };

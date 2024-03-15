@@ -1,0 +1,74 @@
+name: test_dayo
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+      - run: npm ci
+      - run: npm run test -- --coverage
+      - run: npm run build
+
+      # - run: node dist/index.js &
+      # - run: npx wait-on -t 10000 http://localhost:8080/api/health
+      # - run: npm run test:api
+
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: test_result
+          path: coverage/**
+          retention-days: 5
+      - uses: actions/upload-artifact@v3
+        with:
+          name: build_result
+          path: dist/**
+          retention-days: 5
+
+  # deploy:
+  #   needs: build
+  #   if: github.event_name == 'push'
+
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/download-artifact@v3
+  #       with:
+  #         name: dist
+  #         path: backend/dist
+
+  #     - uses: shimataro/ssh-key-action@v2
+  #       with:
+  #         key: ${{ secrets.BACKEND_SERVER_SSH_KEY }}
+  #         known_hosts: ${{ secrets.BACKEND_SERVER_KNOWN_HOST }}
+
+  #     - run: rsync -v dist/index.js ${SERVER_USER}@${SERVER_IP}:~/index.js
+  #       env:
+  #         SERVER_USER: ${{ secrets.BACKEND_SERVER_USER }}
+  #         SERVER_IP: ${{ secrets.BACKEND_SERVER_IP }}
+  #     - run: ssh ${SERVER_USER}@${SERVER_IP} sudo systemctl restart backend
+  #       env:
+  #         SERVER_USER: ${{ secrets.BACKEND_SERVER_USER }}
+  #         SERVER_IP: ${{ secrets.BACKEND_SERVER_IP }}
+  #     - run: ssh ${SERVER_USER}@${SERVER_IP} systemctl status backend
+  #       env:
+  #         SERVER_USER: ${{ secrets.BACKEND_SERVER_USER }}
+  #         SERVER_IP: ${{ secrets.BACKEND_SERVER_IP }}
+
+
+  image_from_public_to_s3:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - run: aws s3 sync public s3://udemy-github-actions-s3-takushi3/a --exact-timestamps --region ap-northeast-1
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.FRONTEND_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.FRONTEND_AWS_SECRET_ACCESS_KEY }}
