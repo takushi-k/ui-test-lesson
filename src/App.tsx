@@ -7,9 +7,9 @@ function App() {
 
   return (
     <>
-      <Button label="ボタン" onClick={() => alert('click')} />
-      <Form />
-      <AsyncComponent />
+      {/* <Button label="ボタン" onClick={() => alert('click')} /> */}
+      {/* <Form /> */}
+      {/* <AsyncComponent /> */}
       <UserSearch />
     </>
   )
