@@ -18,7 +18,7 @@ type Story = StoryObj<typeof Button> //storyの型情報を定義
 
 export const Primary: Story = {
   args: {
-    label: "Primaryボタン",
+    label: "Primaryボタン2",
     primary: true,
   }
 }
