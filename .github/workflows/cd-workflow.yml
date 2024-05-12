@@ -1,0 +1,46 @@
+name: test_dayo_deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Login to ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: webapp push to ECR
+      id: build-image-webapp
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+
+      run: |
+        docker build -t $ECR_REGISTRY/ui-test-lesson:latest .
+        docker push $ECR_REGISTRY/ui-test-lesson:latest
+
+  image_from_public_to_s3:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - run: aws s3 sync public s3://udemy-github-actions-s3-takushi3/a --exact-timestamps --region ap-northeast-1
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.FRONTEND_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.FRONTEND_AWS_SECRET_ACCESS_KEY }}

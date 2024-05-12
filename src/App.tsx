@@ -1,5 +1,6 @@
 import AsyncComponent from "./components/AsyncComponent"
 import Button from "./components/Button"
+import Counter from "./components/Counter"
 import Form from "./components/Form"
 import { UserSearch } from "./components/UserSearch"
 
@@ -10,7 +11,8 @@ function App() {
       {/* <Button label="ボタン" onClick={() => alert('click')} /> */}
       {/* <Form /> */}
       {/* <AsyncComponent /> */}
-      <UserSearch />
+      {/* <UserSearch /> */}
+      <Counter />
     </>
   )
 }
