@@ -1,4 +1,4 @@
-name: test_dayo_deploy
+name: test_dayo_deploy_storybook_react_app
 
 on:
   push:
