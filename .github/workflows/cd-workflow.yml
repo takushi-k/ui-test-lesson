@@ -1,44 +1,47 @@
-# name: test_dayo_deploy
+name: test_dayo_deploy
 
-# on:
-#   push:
-#     branches:
-#       - main
-# env:
-#   AWS_REGION: ap-northeast-1
+on:
+  push:
+    branches:
+      - main
+env:
+  AWS_REGION: ap-northeast-1
 
-# jobs:
-#   deploy:
-#     name: deploy
-#     runs-on: ubuntu-latest
-#     timeout-minutes: 30
+jobs:
+  deploy:
+    name: deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
 
-#     steps:
-#     - name: Checkout
-#       uses: actions/checkout@v3
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
 
-#     - name: Configure AWS credentials
-#       uses: aws-actions/configure-aws-credentials@v1
-#       with:
-#         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#         aws-region: ${{ env.AWS_REGION }}
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
 
-#     - name: Login to ECR
-#       id: login-ecr
-#       uses: aws-actions/amazon-ecr-login@v1
+    - name: Login to ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
 
-#     - name: webapp push to ECR
-#       id: build-image-webapp
-#       env:
-#         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+    - name: webapp push to ECR
+      id: build-image-webapp
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
 
-#       run: |
-#         docker build -t $ECR_REGISTRY/ui-test-lesson:latest .
-#         docker push $ECR_REGISTRY/ui-test-lesson:latest
+      run: |
+        docker build -t $ECR_REGISTRY/ui-test-lesson:latest .
+        docker push $ECR_REGISTRY/ui-test-lesson:latest
 
-#     - name: Deploy to ECS
-#       run: |
-#         aws ecs run-task --cluster udemy-aws-container-cluster-ui-test-lesson --task-definition arn:aws:ecs:ap-northeast-1:654654221254:task-definition/udemy-aws-container-task-definition-ui-test-lesson:1 --network-configuration "awsvpcConfiguration={subnets=[subnet-090c0d06b611d97c4],securityGroups=[sg-0791db4bf102e525d],assignPublicIp=ENABLED}" --launch-type FARGATE
-
+    - name: Deploy to ECS
+      run: |
+        aws ecs run-task \
+        --cluster udemy-aws-container-cluster-ui-test-lesson \
+        --task-definition arn:aws:ecs:ap-northeast-1:654654221254:task-definition/udemy-aws-container-task-definition-ui-test-lesson:1 \
+        --network-configuration "awsvpcConfiguration={subnets=[subnet-090c0d06b611d97c4],securityGroups=[sg-0791db4bf102e525d],assignPublicIp=ENABLED}" \
+        --launch-type FARGATE
 
